@@ -1,0 +1,115 @@
+* Introduction
+** What is Akka?
+*** Actors
+    - 分布式、并发、并行的简单和高层次抽象
+    - 异步、无阻塞、高性能的消息驱动编程模型
+    - 轻量级事件驱动线程
+*** Fault Tolerance
+    - 跨JVM
+    - 错误自愈，永不宕机
+*** Location Transparency
+    Akka是分布式设计，所有actors之间都不是直接交互，而是通过一个类似的代理。所以对actor的位置是透明无关的。
+*** Persistence
+    actors的状态和数据可以被持久化，这样即使宕机也可以恢复。
+** Why Akka?
+*** Good use-case for Akka
+    - 投资和商业银行
+    - 销售
+    - 社会媒体
+    - 模拟计算
+    - 游戏
+    - 移动和交通及通
+    - 医疗业
+    - 数据分析
+** Getting Started
+*** Modules
+    - akka-actor:
+    - akka-agent:
+    - akka-camel: 集成Apache Camel
+    - akka-cluster:
+    - akka-osgi:
+    - akka-osgi-aries:
+    - akka-remote:
+    - akka-slf4j:
+    - akka-stream:
+    - akka-testkit: 测试工具
+
+* General
+** Terminology, Concepts
+*** Concurrency vs. Parallelism
+*** Asynchronous vs. Synchronous
+*** Non-blocking vs. Blocking
+*** Deadlock vs. Starvation vs. Live-lock
+    live-lock类似于deadlock，但是所有相关线程不是完全等待资源，线程还是会不停改变自己的状态，比如在有替代资源的场景
+*** Race Condition
+*** Non-blocking Guarantess(Progress Conditions)
+    - Wait-freedom
+    - Lock-freedom
+    - Obstruction-freedom
+** Actor Systems
+   Actors 是状态和行为的封装。actors之间没有直接通信，全部通过发送信息到收件箱，由框架负责调用处理和返回。
+   *Note*: 一个ActorSystem是重量级结构，需要1到N个线程，所以一个应用一个ActorSystem。
+*** Hierachical Structure
+    actor具有层次系统，一个actor可以将任务细分成多个小的任务，然后创建很多子actor并管理这些子actor。
+*** Configuration Container
+*** Actor Best Practices
+    - 每个actor只需要关心自己的任务，避免资源独占。
+    - 禁止传递可变的消息体
+    - actor是状态和行为的封装，不要通过消息传递行为。
+    - 使用分层系统，谨慎的创建顶层actors
+*** TODO Blocking Needs Careful Management
+*** What you shoud not concern yourself with
+** What is an Actor?
+*** Actor Reference
+*** State
+*** Behavior
+*** Mailbox
+*** Child Actors
+*** Supervisor Strategy
+*** When an Actor Terminates
+** Supervison and Monitoring
+*** What Supervision
+*** The Top-Level Supervisors
+*** What Restarting Means
+*** What Lifecycle Monitoring Means
+*** One-For-One Strategy vs. All-For-One Strategy
+** Actor References, Paths and Addresses
+*** What is an actor reference?
+*** What is an Actor Path?
+*** How are Actor References obtained?
+*** Actor Reference and Path Equality
+*** Reusing Actor Paths
+*** The Interplay with Remote Deployment
+*** what is the Adrress part used for?
+*** Top-Levle Scopes for Actor Paths
+** Location Transparency
+*** Distributed by Default
+*** Ways in which Transparency is Broken
+*** How is Remoting Used?
+*** Peer-to-Peer vs. Client-Server
+*** Marking Points for Scaling Up with Routers
+** Akka and the Java Memory Model
+*** The Java Memory Model
+*** Actors and the Java Memory Model
+*** Futures and the Java Memory Model
+*** Actors and shared mutable state
+** Message Delivery Reliability
+*** The General Rules
+*** The Rules for In-JVM(Local) Message Sends
+*** Higher-level abstractions
+*** Dead Letters
+** Configuration
+*** Where configuration is read from
+*** When using JaraJar, OneJar, Assembly or and jar-bundler
+*** Custom application.conf
+*** Including files
+*** Logging of Configuration
+*** A Word About ClassLoaders
+*** Application Specific settings
+*** Configuring multiple ActorSystem
+*** Reading configuration from a custom location
+*** Actor Deployment Configuration
+*** Listing of the Reference Configuration
+* Actors
+** Creating Actors
+* Actors(Java with Lambda Support)

@@ -1,0 +1,154 @@
+* 构造过程抽象
+** 程序设计的基本元素
+   强有力的程序语言，应该提供一下三种机制
+   - 基本表达形式: 用于表示语言所关心的最简单的个体。
+   - 组合的方法: 通过它们可以从较简单的东西出发构造出复合的元素。
+   - 抽象的方法: 通过它们可以为复合对象命名，并将它们当作单元去操作。
+*** 表达式
+    - 表达式
+    - 组合式
+    - 运算符
+    - 前置表示
+    - 读入-求值-打印
+*** 命名和环境
+    - 定义变量: define
+    - 环境: 解释器维护符号与值的存储方式，成为环境(全局环境)
+*** 组合式的求值
+**** 解释器：
+     1. 求各个参数的子表达式(包括运算符)
+     2. 将运算过程应用在各个参数实际值上
+**** 若干规定
+     1. 数的值就是本身所表示的数值
+     2. 内部运算符的值就是能完成响应操作的机器指令序列
+     3. 其他名字的值就是环境中关联与这一名字的那个对象
+     注意：规定2可以看作规定3的特例。
+**** 特殊形式
+(define x 3)并不是组合式，因此求值规则也不一样。
+*** 复合过程
+    定义过程: (define (<name> <parameters>) <body>)。对定义过程的求值过程就是一个复合过程。
+*** 过程应用的代换模型
+    - 正则序求值
+    - 应用序求值
+*** 条件表达式和谓词
+#+BEGIN_SRC scheme
+(cond (<p1> <e1>)
+      (<p2> <e2>)
+      ...
+      (<pn> <en>))
+
+(if <predicate> <consequent> <alternative>)
+
+(and <e1> ...  <en>)
+
+(or <e1> ...  <en>)
+
+(not <e1> ...  <en>)
+#+END_SRC
+    - 对偶: (<p1> <e1>)
+    - 谓词: 对偶的第一个表达式是一个谓词，指返回true or false的过程，或者能求出true or false的表达式。
+    注意: and和or是特殊形式，而不是普通的过程，not是普通的过程。
+    求绝对值的若干方式
+#+BEGIN_SRC scheme
+(define (abs x)
+  (cond ((> x 0) x)
+        ((= x 0) 0)
+        ((< x 0) (- x))))
+
+(define (abs x)
+  (cond ((< x 0) -x)
+        (else x)))
+
+(define (abs x)
+  (if (< x 0)
+      (- x)
+      x))
+#+END_SRC
+*** 实例: 采用牛顿法求平方根
+    - 说明性知识
+    - 行动性知识
+*** 过程作为黑箱抽象
+**** 局部名
+     - 约束变量
+     - 作用域
+**** 内部定义和快结构
+     子过程局部化。
+     - 块结构: 嵌套的定义
+#+BEGIN_SRC sheme
+(define (sqrt x)
+  (define (good-enough? guess x)
+    (< (abs (- (square guess) x)) 0.001))
+  (define (improve guess x)
+     (average guess (/ x guess)))
+  (define (sqrt-iter guess x)
+     (if (good-enough? guess x)
+         guess
+         (sqrt-iter (improve guess x) x)))
+  (sqrt-iter 1.0 x))
+#+END_SRC
+     词法作用域，能够简化程序
+#+BEGIN_SRC scheme
+(define (sqrt x)
+  (define (good-enough? guess)
+    (< (abs (- (square guess) x)) 0.001))
+  (define (improve guess)
+    (average guess (/ x guess)))
+  (define (sqrt-iter guess)
+    (if (good-enough? guess)
+        guess
+        (sqrt-iter (improve guess))))
+  (sqrt-iter 1.0))
+
+#+END_SRC
+** 过程与它们所产生的计算
+*** 线性的递归和迭代
+    线性递归会延长计算链，对硬件的资源要求更高。因为使用计算链维护下文信息，而迭代使用计数器等变量，所以没有很长的计算链。
+    能够使用迭代型计算过程的递归，称为尾递归。
+*** 树形递归
+    树形递归有时候会使得计算机资源在时间和空间上呈现指数级增长。但是因为递归在问题描述和理解上有巨大优势，所以人们希望找到一种“灵巧编译器”，能够自动将树形递归翻译成更有效的过程。
+#+BEGIN_SRC scheme
+# 换零钱方式的统计
+(define (count-change amount)
+  (cc amount 5))
+
+(define (cc amount kinds-of-coins)
+  (cond ((= amount 0) 1)
+        ((or (< amount 0) (= kinds-of-coins 0)) 0)
+        (else (+ (cc amount
+                     (- kinds-of-coins 1))
+                 (cc (- amount
+                        (first-demonination kindes-of-coins))
+                     kinds-of-coins)))))
+
+(define (first-denomination kinds-of-coins)
+        (cond ((= kinds-of-coins 1) 1)
+              ((= kinds-of-coins 2) 5)
+              ((= kinds-of-coins 3) 10)
+              ((= kinds-of-coins 4) 25)
+              ((= kinds-of-coins 5) 50)))
+#+END_SRC
+*** 增长的阶
+*** 求幂
+*** 素数检测
+** 用高阶函数做抽象
+   常规的语言只是把对数据的操作进行抽象，而lisp提供了对行为的抽象，这种把行为作为参数(而不是数)的函数，称为高阶函数。
+#+BEGIN_SRC scheme
+# 高阶函数
+(define (sum term a next b)
+    (if (> a b)
+        0
+        (+ (term a)
+           (sum term (next a ) next b))))
+
+# 一般函数，作为高阶函数的参数
+# term
+(define (cube x)
+    (* x x x))
+
+# next
+(define (inc n)
+    (+ n 1))
+
+# 合成函数
+(define (sum-cubes a b)
+    (sum cube a inc b))
+#+END_SRC
